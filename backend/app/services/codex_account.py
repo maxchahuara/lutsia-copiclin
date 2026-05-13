@@ -3,11 +3,11 @@ from __future__ import annotations
 import os
 import subprocess
 from dataclasses import asdict, dataclass
-from pathlib import Path
 from shutil import which
 
-APP_DATA_HOME = Path.home() / ".local" / "share" / "lutsia-copiclin"
-APP_CODEX_HOME = APP_DATA_HOME / "codex"
+from app.paths import codex_home_dir
+
+APP_CODEX_HOME = codex_home_dir()
 
 
 @dataclass
@@ -55,15 +55,21 @@ class CodexAccountProvider:
         if not codex:
             return CodexAccountStatus(False, False, "codex CLI not found", str(APP_CODEX_HOME))
         ensure_codex_home()
-        proc = subprocess.run(
-            [codex, "login", "status"],
-            text=True,
-            capture_output=True,
-            timeout=8,
-            env=codex_env(),
-        )
+        try:
+            proc = subprocess.run(
+                [codex, "login", "status"],
+                text=True,
+                capture_output=True,
+                timeout=8,
+                env=codex_env(),
+            )
+        except subprocess.TimeoutExpired:
+            return CodexAccountStatus(True, False, "codex login status timed out", str(APP_CODEX_HOME))
+        except Exception as exc:  # pragma: no cover - platform dependent
+            return CodexAccountStatus(True, False, f"codex login status failed: {exc}", str(APP_CODEX_HOME))
         output = ((proc.stdout or "") + (proc.stderr or "")).strip()
-        logged_in = proc.returncode == 0 and "not logged in" not in output.lower()
+        lower = output.lower()
+        logged_in = proc.returncode == 0 and "not logged in" not in lower and "error" not in lower
         return CodexAccountStatus(True, logged_in, output or "no status output", str(APP_CODEX_HOME))
 
     def login_instructions(self) -> dict[str, object]:

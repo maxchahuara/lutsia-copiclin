@@ -6,7 +6,7 @@ def test_codex_auth_endpoints_are_per_user_app_scoped():
     client = TestClient(app)
     status = client.get("/auth/codex/status").json()
     assert status["auth_scope"] == "per-user app CODEX_HOME"
-    assert "lutsia-copiclin" in status["codex_home"]
+    assert "CopiClin" in status["codex_home"]
 
     instructions = client.get("/auth/codex/login-instructions").json()
     assert instructions["method"] == "official-codex-device-auth"

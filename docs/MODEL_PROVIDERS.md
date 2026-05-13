@@ -4,7 +4,7 @@ Current product decision from dr. Max: **no local LLM for now**. The LLM/cerebro
 
 ## Enabled direction
 
-- `codex-account`: primary intended LLM provider. It may use only official documented Codex/OpenAI local tooling and account login. It must never read raw OAuth tokens, cookies, browser sessions, or private endpoints.
+- `codex-account`: primary intended LLM provider. It may use only official documented, app-scoped Codex tooling and account login. It must never read raw OAuth tokens, cookies, browser sessions, or private endpoints.
 - `mock`: development/test provider only so the app and tests run deterministically without sending clinical data anywhere.
 
 ## Transcription

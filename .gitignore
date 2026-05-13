@@ -57,3 +57,4 @@ exports/
 *.tar
 *.tar.gz
 *.7z
+frontend/tsconfig.tsbuildinfo

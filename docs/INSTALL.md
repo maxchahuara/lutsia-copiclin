@@ -1,20 +1,67 @@
 # Install
 
-## Developer
+## Developer/source install
+
+Requirements:
+
+- Python 3.11+
+- Node.js 22+
+- npm
 
 ```bash
-scripts/bootstrap_dev.sh
-make test
+make setup
+make check
 ```
 
-For local Whisper/audio packages:
+Run backend and API docs:
+
+```bash
+make dev-backend
+```
+
+Run frontend dev server:
+
+```bash
+make dev-frontend
+```
+
+Build static frontend into the Python app:
+
+```bash
+make frontend-build
+```
+
+Then run:
+
+```bash
+. .venv/bin/activate
+lutsia-copiclin-api
+# or
+lutsia-copiclin-desktop
+```
+
+## Local transcription packages
 
 ```bash
 scripts/bootstrap_local_ai.sh
 ```
 
-The app uses `imageio-ffmpeg` so packaged builds can include an FFmpeg binary without asking physicians to install FFmpeg manually. Large Whisper model downloads are not automatic yet; the UI will need explicit model selection/download consent.
+The app uses `imageio-ffmpeg` so packaged builds can include FFmpeg support without requiring physicians to install system FFmpeg manually. Large Whisper model downloads are intentionally not automatic yet; the UI must ask for explicit model selection/download consent.
 
-## End user
+## Codex account provider
 
-Future releases will provide OS installers from GitHub Releases. The installer must bundle the Python runtime, backend, desktop shell, frontend assets, and audio conversion support.
+End users must authenticate with their own ChatGPT/Codex account. The app must not use developer credentials.
+
+Use `/auth/codex/login-instructions` to obtain the exact app-scoped `CODEX_HOME` and run official Codex device authentication for that user.
+
+## End-user installers
+
+Future releases should provide OS installers from GitHub Releases. The installer must bundle or install:
+
+- Python runtime/backend.
+- Desktop shell.
+- Built frontend assets.
+- Audio conversion support.
+- Optional official Codex CLI integration, subject to license and release validation.
+
+Before publishing an installer, run `make check` on Linux, Windows, and macOS CI.

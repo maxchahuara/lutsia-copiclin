@@ -25,3 +25,20 @@ def test_audio_upload_endpoint_accepts_file():
     assert response.status_code == 200
     payload = response.json()
     assert payload["size_bytes"] == len(b"fake-audio-bytes")
+
+
+def test_requires_consent_before_audio_processing():
+    client = TestClient(app)
+    cid = client.post("/consultations", json={"title": "Sin consentimiento"}).json()["id"]
+    response = client.post(f"/consultations/{cid}/transcribe")
+    assert response.status_code == 409
+
+
+def test_codex_provider_fails_closed_without_user_login():
+    client = TestClient(app)
+    client.put("/settings", json={"llm_provider": "codex-account"})
+    cid = client.post("/consultations", json={"title": "Codex", "consent_confirmed": True}).json()["id"]
+    client.post(f"/consultations/{cid}/transcribe")
+    response = client.post(f"/consultations/{cid}/generate-note")
+    assert response.status_code in {409, 501}
+    assert response.status_code != 200

@@ -1,1 +1,24 @@
-{"name":"lutsia-copiclin-frontend","private":true,"version":"0.1.0","type":"module","scripts":{"dev":"vite","build":"tsc && vite build","test":"vitest"},"dependencies":{"@vitejs/plugin-react":"latest","vite":"latest","typescript":"latest","react":"latest","react-dom":"latest","@tanstack/react-query":"latest","zustand":"latest"},"devDependencies":{"vitest":"latest","playwright":"latest"}}
+{
+  "name": "lutsia-copiclin-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "typescript": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "vitest": "latest",
+    "playwright": "latest"
+  }
+}
