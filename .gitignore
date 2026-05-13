@@ -1,0 +1,59 @@
+# Secrets / credentials
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*token*
+*secret*
+credentials*.json
+oauth*.json
+rclone.conf
+cookies*.txt
+
+# Local/runtime
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+.cache/
+tmp/
+.temp/
+local/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage/
+.next/
+.nuxt/
+.vite/
+
+# Editors
+.vscode/settings.json
+.idea/
+
+# Generated heavy outputs
+outbox/
+exports/
+*.zip
+*.tar
+*.tar.gz
+*.7z
