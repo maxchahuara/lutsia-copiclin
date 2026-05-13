@@ -83,3 +83,7 @@ make check
 ```
 
 Incluye lint Python, tests backend, compileall y build frontend.
+
+## Licencia
+
+MIT. Puedes usar, estudiar, modificar y hacer fork del proyecto libremente, manteniendo el aviso de licencia.
