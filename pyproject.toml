@@ -22,3 +22,7 @@ pythonpath = ["backend"]
 
 [tool.ruff]
 line-length = 100
+
+[tool.setuptools.packages.find]
+where = ["backend"]
+include = ["app*"]
