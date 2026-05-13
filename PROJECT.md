@@ -1,4 +1,4 @@
-# MedScribe Local - Project brief
+# LUTSIA CopiClin - Project brief
 
 ## Goal
 

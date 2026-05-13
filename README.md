@@ -1,4 +1,4 @@
-# MedScribe Local
+# LUTSIA CopiClin
 
 Status: draft
 

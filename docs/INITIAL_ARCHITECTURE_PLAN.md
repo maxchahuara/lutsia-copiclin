@@ -1,11 +1,11 @@
-# MedScribe Local - Initial Architecture Plan
+# LUTSIA CopiClin - Initial Architecture Plan
 
 Date: 2026-05-13
 Status: pre-development plan
 
 ## 1. Understanding
 
-MedScribe Local is a local-first desktop assistant for physicians. It records or imports consultation audio, stores data locally, transcribes speech, structures clinical information in Spanish, and produces editable/copyable clinical documentation blocks. It is not an EHR, not a diagnostic medical device, and not an autonomous clinical decision system.
+LUTSIA CopiClin is a local-first desktop assistant for physicians. It records or imports consultation audio, stores data locally, transcribes speech, structures clinical information in Spanish, and produces editable/copyable clinical documentation blocks. It is not an EHR, not a diagnostic medical device, and not an autonomous clinical decision system.
 
 Core product priorities:
 
