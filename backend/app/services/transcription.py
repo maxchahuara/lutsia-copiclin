@@ -52,7 +52,7 @@ class MockTranscriptionProvider:
 class LocalFasterWhisperProvider:
     provider_id = "faster-whisper"
 
-    def __init__(self, model_name: str = "small", device: str = "auto") -> None:
+    def __init__(self, model_name: str = "small", device: str = "cpu") -> None:
         try:
             from faster_whisper import WhisperModel  # type: ignore
         except Exception as exc:  # pragma: no cover - depends on optional install

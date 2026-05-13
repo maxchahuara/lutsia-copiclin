@@ -13,8 +13,8 @@ def app_data_dir() -> Path:
     """Return the per-user data directory for the installed desktop app."""
     override = os.environ.get("LUTSIA_COPICLIN_DATA_DIR")
     if override:
-        return Path(override).expanduser()
-    return Path(user_data_dir(APP_NAME, APP_AUTHOR))
+        return Path(override).expanduser().resolve(strict=False)
+    return Path(user_data_dir(APP_NAME, APP_AUTHOR)).resolve(strict=False)
 
 
 def consultations_dir() -> Path:

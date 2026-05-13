@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from app.paths import app_data_dir
 from app.schemas.clinical_note import ClinicalNoteResult
-from app.schemas.core import ConsultationCreate, ConsultationRead, SettingsRead
+from app.schemas.core import ConsultationCreate, ConsultationRead, PatientCreate, PatientRead, SettingsRead, utcnow
 
 
 class MemoryStore:
@@ -19,6 +19,7 @@ class MemoryStore:
     def __init__(self, db_path: Path | None = None) -> None:
         self.db_path = db_path or app_data_dir() / "store.json"
         self.settings = SettingsRead()
+        self.patients: dict[str, PatientRead] = {}
         self.consultations: dict[str, ConsultationRead] = {}
         self.transcripts: dict[str, dict] = {}
         self.notes: dict[str, ClinicalNoteResult] = {}
@@ -34,6 +35,10 @@ class MemoryStore:
             # Fail closed to a blank in-memory store rather than crashing the app.
             return
         self.settings = SettingsRead.model_validate(data.get("settings") or {})
+        self.patients = {
+            pid: PatientRead.model_validate(value)
+            for pid, value in (data.get("patients") or {}).items()
+        }
         self.consultations = {
             cid: ConsultationRead.model_validate(value)
             for cid, value in (data.get("consultations") or {}).items()
@@ -50,6 +55,7 @@ class MemoryStore:
         payload = {
             "schema_version": 1,
             "settings": self.settings.model_dump(mode="json"),
+            "patients": {pid: item.model_dump(mode="json") for pid, item in self.patients.items()},
             "consultations": {
                 cid: item.model_dump(mode="json") for cid, item in self.consultations.items()
             },
@@ -66,6 +72,16 @@ class MemoryStore:
         self.consultations[consultation.id] = consultation
         self.save()
         return consultation
+
+    def create_patient(self, payload: PatientCreate) -> PatientRead:
+        patient = PatientRead(id=str(uuid4()), **payload.model_dump())
+        self.patients[patient.id] = patient
+        self.save()
+        return patient
+
+    def update_patient_timestamp(self, patient_id: str) -> None:
+        if patient_id in self.patients:
+            self.patients[patient_id].updated_at = utcnow()
 
 
 store = MemoryStore()

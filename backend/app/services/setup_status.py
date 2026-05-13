@@ -2,85 +2,72 @@ from __future__ import annotations
 
 from app.services.codex_account import CodexAccountProvider
 from app.services.runtime_checks import check_capabilities
+from app.services.whisper_models import is_model_installed, list_model_statuses
 
 
 def first_run_setup_status(settings) -> dict[str, object]:
     capabilities = {cap.id: cap for cap in check_capabilities()}
-    codex = CodexAccountProvider()
-    codex_status = codex.status()
+    codex_status = CodexAccountProvider().status()
+    selected_model_ready = is_model_installed(settings.transcription_model_name)
 
     required_steps = [
         {
             "id": "codex-account",
-            "title": "Conectar cuenta ChatGPT/Codex",
+            "title": "Iniciar sesion con ChatGPT",
             "ok": codex_status.logged_in,
             "required": True,
-            "detail": codex_status.detail,
-            "action": codex.login_instructions(),
+            "detail": "Cuenta conectada"
+            if codex_status.logged_in
+            else "Pendiente de inicio de sesion",
         },
         {
             "id": "whisper-local",
-            "title": "Verificar transcripción local Whisper/faster-whisper",
+            "title": "Transcripcion local",
             "ok": bool(capabilities.get("faster-whisper") and capabilities["faster-whisper"].ok),
             "required": True,
-            "detail": capabilities.get("faster-whisper").detail if capabilities.get("faster-whisper") else "not checked",
-            "action": {
-                "command": "pip install -e '.[dev]'",
-                "notes": [
-                    "faster-whisper es dependencia base de CopiClin; no se usa API para transcribir.",
-                ],
-            },
+            "detail": "Whisper esta instalado localmente",
         },
         {
-            "id": "whisper-model-small",
-            "title": "Descargar modelo Whisper local por defecto",
-            "ok": bool(capabilities.get("whisper-model-small") and capabilities["whisper-model-small"].ok),
+            "id": "whisper-model",
+            "title": "Modelo Whisper seleccionado",
+            "ok": selected_model_ready,
             "required": True,
-            "detail": capabilities.get("whisper-model-small").detail if capabilities.get("whisper-model-small") else "not checked",
-            "action": {
-                "command": "python scripts/download_whisper_model.py --model small",
-                "notes": [
-                    "Descarga una vez el modelo local; luego la transcripción corre en la PC del usuario.",
-                    "No envía audio a API externa para transcripción.",
-                ],
-            },
+            "detail": f"Modelo activo: {settings.transcription_model_name}",
         },
         {
             "id": "audio-runtime",
-            "title": "Verificar runtime de audio/FFmpeg",
+            "title": "Audio local",
             "ok": bool(capabilities.get("ffmpeg-bundled") and capabilities["ffmpeg-bundled"].ok),
             "required": True,
-            "detail": capabilities.get("ffmpeg-bundled").detail if capabilities.get("ffmpeg-bundled") else "not checked",
-            "action": {"command": "pip install imageio-ffmpeg"},
+            "detail": "Conversion de audio lista",
         },
     ]
     optional_steps = [
         {
             "id": "microphone-runtime",
-            "title": "Micrófono local",
+            "title": "Microfono local",
             "ok": bool(capabilities.get("sounddevice") and capabilities["sounddevice"].ok),
             "required": False,
-            "detail": capabilities.get("sounddevice").detail if capabilities.get("sounddevice") else "not checked",
-            "action": {"command": "pip install -e '.[local-ai]'"},
+            "detail": "Captura nativa disponible"
+            if capabilities.get("sounddevice") and capabilities["sounddevice"].ok
+            else "Captura nativa pendiente",
         },
         {
             "id": "safe-use",
             "title": "Confirmar uso seguro",
             "ok": bool(settings.setup_completed),
             "required": False,
-            "detail": "CopiClin genera borradores: el médico debe revisar antes de copiar/usar.",
-            "action": {"button": "Marcar configuración revisada"},
+            "detail": "El medico revisa cada borrador antes de usarlo.",
         },
     ]
     all_required_ok = all(bool(step["ok"]) for step in required_steps)
     return {
         "setup_completed": bool(settings.setup_completed),
         "ready_for_real_use": all_required_ok and bool(settings.setup_completed),
-        "can_run_demo": True,
+        "can_run_demo": False,
         "required_steps": required_steps,
         "optional_steps": optional_steps,
-        "warnings": [
-            "No uses CopiClin con pacientes reales hasta conectar Codex y verificar Whisper local + modelo descargado.",
-            "El proveedor Codex real todavía falla cerrado hasta validar la integración no-interactiva oficial.",
-        ],
+        "warnings": [],
+        "codex": codex_status.to_dict(),
+        "whisper_models": list_model_statuses(settings.transcription_model_name),
     }

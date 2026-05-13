@@ -10,11 +10,13 @@ from app.services.memory_store import store
 def reset_store_for_test(tmp_path):
     store.db_path = tmp_path / "store.json"
     store.settings = SettingsRead(llm_provider="mock", transcription_provider="mock")
+    store.patients.clear()
     store.consultations.clear()
     store.transcripts.clear()
     store.notes.clear()
     store.audio_files.clear()
     yield
+    store.patients.clear()
     store.consultations.clear()
     store.transcripts.clear()
     store.notes.clear()

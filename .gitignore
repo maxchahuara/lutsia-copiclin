@@ -53,6 +53,7 @@ coverage/
 # Generated heavy outputs
 outbox/
 exports/
+artifacts/
 *.zip
 *.tar
 *.tar.gz

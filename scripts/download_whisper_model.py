@@ -5,12 +5,14 @@ import argparse
 import os
 import sys
 
-from app.paths import whisper_models_dir
+from app.services.whisper_models import download_whisper_model, valid_model_ids
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Download and verify a local faster-whisper model.")
-    parser.add_argument("--model", default=os.environ.get("LUTSIA_COPICLIN_WHISPER_MODEL", "small"))
+    parser = argparse.ArgumentParser(
+        description="Download and verify a local faster-whisper model."
+    )
+    parser.add_argument("--model", default="small")
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--compute-type", default="int8")
     args = parser.parse_args()
@@ -19,16 +21,15 @@ def main() -> int:
         print("Skipping Whisper model download because LUTSIA_COPICLIN_SKIP_MODEL_DOWNLOAD=1")
         return 0
 
-    try:
-        from faster_whisper import WhisperModel  # type: ignore
-    except Exception as exc:
-        print("faster-whisper is not installed. Run: pip install -e '.[dev]'", file=sys.stderr)
-        raise SystemExit(2) from exc
+    if args.model not in valid_model_ids():
+        print(
+            f"Unsupported model '{args.model}'. Available: {', '.join(sorted(valid_model_ids()))}",
+            file=sys.stderr,
+        )
+        return 2
 
-    target = whisper_models_dir() / args.model
-    target.mkdir(parents=True, exist_ok=True)
-    print(f"Downloading/verifying local Whisper model '{args.model}' in {target}")
-    WhisperModel(args.model, device=args.device, compute_type=args.compute_type, download_root=str(target))
+    print(f"Downloading/verifying local Whisper model '{args.model}'")
+    download_whisper_model(args.model)
     print("Local Whisper model is ready.")
     return 0
 

@@ -25,7 +25,7 @@ def main() -> None:
     port = _free_local_port()
     threading.Thread(target=run_api, args=(host, port), daemon=True).start()
     time.sleep(1.0)
-    webview.create_window("LUTSIA CopiClin", f"http://{host}:{port}/", width=1200, height=800)
+    webview.create_window("LUTSIA CopiCLin", f"http://{host}:{port}/", width=1200, height=800)
     webview.start()
 
 

@@ -12,6 +12,7 @@ class ConsultationCreate(BaseModel):
     language: str = "es"
     consent_confirmed: bool = False
     patient_label: str | None = None
+    patient_id: str | None = None
 
 
 class ConsultationRead(ConsultationCreate):
@@ -20,6 +21,20 @@ class ConsultationRead(ConsultationCreate):
     updated_at: datetime = Field(default_factory=utcnow)
     status: str = "created"
     local_storage_path: str | None = None
+
+
+class PatientCreate(BaseModel):
+    full_name: str
+    identifier: str | None = None
+    birth_date: str | None = None
+    contact: str | None = None
+    notes: str | None = None
+
+
+class PatientRead(PatientCreate):
+    id: str
+    created_at: datetime = Field(default_factory=utcnow)
+    updated_at: datetime = Field(default_factory=utcnow)
 
 
 class SettingsRead(BaseModel):
@@ -47,3 +62,7 @@ class SettingsUpdate(BaseModel):
     data_retention_policy: str | None = None
     setup_completed: bool | None = None
     setup_mode: str | None = None
+
+
+class TranscriptionModelUpdate(BaseModel):
+    model_name: str
