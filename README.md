@@ -13,12 +13,16 @@ Estado actual: prototipo técnico pre-release. No es HCE/EHR, no diagnostica y n
 - Whisper/faster-whisper local es permitido para transcripción.
 
 
+## Transcripción local obligatoria
+
+CopiClin instala `faster-whisper` como dependencia base y `make setup` descarga/verifica el modelo local `small`. La transcripción de audio de consulta debe correr localmente en la PC del usuario; no se debe implementar una API externa de transcripción para este producto.
+
 ## Primer arranque
 
 Al abrir CopiClin por primera vez, la app muestra una configuración inicial obligatoria:
 
 1. Verificar conexión de cuenta ChatGPT/Codex por usuario.
-2. Verificar instalación de Whisper/faster-whisper para transcripción local.
+2. Verificar instalación de Whisper/faster-whisper y modelo local `small` para transcripción local.
 3. Verificar runtime de audio/FFmpeg.
 4. Confirmar que CopiClin solo genera borradores revisables por el médico.
 

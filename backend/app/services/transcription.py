@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Protocol, Callable, Any
 
+from app.paths import whisper_models_dir
+
 
 class TranscriptionProvider(Protocol):
     def transcribe(
@@ -55,7 +57,8 @@ class LocalFasterWhisperProvider:
             from faster_whisper import WhisperModel  # type: ignore
         except Exception as exc:  # pragma: no cover - depends on optional install
             raise RuntimeError("faster-whisper is not installed. Install with: pip install -e .[local-ai]") from exc
-        self._model = WhisperModel(model_name, device=device)
+        model_dir = whisper_models_dir() / model_name
+        self._model = WhisperModel(model_name, device=device, compute_type="int8", download_root=str(model_dir))
 
     def transcribe(self, audio_path: str | None = None, language: str = "es", **_: object) -> dict:
         if not audio_path:

@@ -46,7 +46,7 @@ lutsia-copiclin-desktop
 scripts/bootstrap_local_ai.sh
 ```
 
-The app uses `imageio-ffmpeg` so packaged builds can include FFmpeg support without requiring physicians to install system FFmpeg manually. Large Whisper model downloads are intentionally not automatic yet; the UI must ask for explicit model selection/download consent.
+The app uses `imageio-ffmpeg` so packaged builds can include FFmpeg support without requiring physicians to install system FFmpeg manually. Large The default local Whisper model (`small`) is downloaded during setup. Larger Whisper model downloads are intentionally not automatic; the UI must ask for explicit model selection/download consent.
 
 ## Codex account provider
 

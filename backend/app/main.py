@@ -142,7 +142,7 @@ def transcribe(consultation_id: str):
     if store.settings.transcription_provider == "faster-whisper":
         if not latest_audio:
             raise HTTPException(status_code=409, detail="Upload audio before local transcription")
-        result = LocalFasterWhisperProvider().transcribe(audio_path=str(latest_audio), language=store.settings.language)
+        result = LocalFasterWhisperProvider(model_name=store.settings.transcription_model_name).transcribe(audio_path=str(latest_audio), language=store.settings.language)
     else:
         result = MockTranscriptionProvider().transcribe(consultation_id=consultation_id, audio_path=latest_audio)
     store.transcripts[consultation_id] = result

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 import shutil
+
+from app.paths import whisper_models_dir
 from dataclasses import dataclass, asdict
 
 from app.services.codex_account import CodexAccountProvider
@@ -51,12 +53,22 @@ def check_capabilities() -> list[Capability]:
         detail="OS keychain access via keyring",
         install_hint="pip install keyring",
     ))
+    faster_whisper_ok = module_available("faster_whisper")
     caps.append(Capability(
         id="faster-whisper",
-        ok=module_available("faster_whisper"),
+        ok=faster_whisper_ok,
         required_for="local Whisper transcription",
         detail="Local Whisper backend package",
-        install_hint="pip install -e .[local-ai]",
+        install_hint="pip install -e .[dev]",
+    ))
+    default_model_dir = whisper_models_dir() / "small"
+    model_ready = default_model_dir.exists() and any(default_model_dir.iterdir())
+    caps.append(Capability(
+        id="whisper-model-small",
+        ok=model_ready,
+        required_for="offline local Whisper transcription",
+        detail=str(default_model_dir) if model_ready else f"model not found at {default_model_dir}",
+        install_hint="python scripts/download_whisper_model.py --model small",
     ))
     caps.append(Capability(
         id="sounddevice",
@@ -84,5 +96,5 @@ def check_capabilities() -> list[Capability]:
 
 
 def required_runtime_ok() -> bool:
-    required_ids = {"ffmpeg-bundled", "keyring"}
+    required_ids = {"ffmpeg-bundled", "keyring", "faster-whisper", "whisper-model-small"}
     return all(c.ok for c in check_capabilities() if c.id in required_ids)

@@ -3,12 +3,11 @@ PYTHON ?= python3
 setup:
 	$(PYTHON) -m venv .venv
 	. .venv/bin/activate && pip install -U pip && pip install -e '.[dev]'
+	. .venv/bin/activate && python scripts/download_whisper_model.py --model small
 	npm --prefix frontend install
 
-setup-local-ai:
-	$(PYTHON) -m venv .venv
-	. .venv/bin/activate && pip install -U pip && pip install -e '.[dev,local-ai]'
-	npm --prefix frontend install
+setup-local-ai: setup
+	. .venv/bin/activate && pip install -e '.[local-ai]'
 
 frontend-build:
 	npm --prefix frontend run build

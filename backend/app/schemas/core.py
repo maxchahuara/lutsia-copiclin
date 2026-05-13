@@ -24,9 +24,10 @@ class ConsultationRead(ConsultationCreate):
 
 class SettingsRead(BaseModel):
     language: str = "es"
-    transcription_provider: str = "mock"
+    transcription_provider: str = "faster-whisper"
     llm_provider: str = "codex-account"
     model_name: str = "codex-account-default"
+    transcription_model_name: str = "small"
     encryption_enabled: bool = True
     telemetry_enabled: bool = False
     data_retention_policy: str = "keep_until_deleted"
@@ -40,6 +41,7 @@ class SettingsUpdate(BaseModel):
     transcription_provider: str | None = None
     llm_provider: str | None = None
     model_name: str | None = None
+    transcription_model_name: str | None = None
     encryption_enabled: bool | None = None
     telemetry_enabled: bool | None = None
     data_retention_policy: str | None = None

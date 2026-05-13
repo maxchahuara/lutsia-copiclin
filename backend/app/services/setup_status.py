@@ -25,10 +25,23 @@ def first_run_setup_status(settings) -> dict[str, object]:
             "required": True,
             "detail": capabilities.get("faster-whisper").detail if capabilities.get("faster-whisper") else "not checked",
             "action": {
-                "command": "pip install -e '.[local-ai]'",
+                "command": "pip install -e '.[dev]'",
                 "notes": [
-                    "Instala faster-whisper y dependencias locales de audio.",
-                    "Los modelos grandes no se descargan automáticamente; el usuario debe elegir tamaño/modelo.",
+                    "faster-whisper es dependencia base de CopiClin; no se usa API para transcribir.",
+                ],
+            },
+        },
+        {
+            "id": "whisper-model-small",
+            "title": "Descargar modelo Whisper local por defecto",
+            "ok": bool(capabilities.get("whisper-model-small") and capabilities["whisper-model-small"].ok),
+            "required": True,
+            "detail": capabilities.get("whisper-model-small").detail if capabilities.get("whisper-model-small") else "not checked",
+            "action": {
+                "command": "python scripts/download_whisper_model.py --model small",
+                "notes": [
+                    "Descarga una vez el modelo local; luego la transcripción corre en la PC del usuario.",
+                    "No envía audio a API externa para transcripción.",
                 ],
             },
         },
@@ -67,7 +80,7 @@ def first_run_setup_status(settings) -> dict[str, object]:
         "required_steps": required_steps,
         "optional_steps": optional_steps,
         "warnings": [
-            "No uses CopiClin con pacientes reales hasta conectar Codex y verificar transcripción local.",
+            "No uses CopiClin con pacientes reales hasta conectar Codex y verificar Whisper local + modelo descargado.",
             "El proveedor Codex real todavía falla cerrado hasta validar la integración no-interactiva oficial.",
         ],
     }

@@ -23,3 +23,7 @@ def consultations_dir() -> Path:
 
 def codex_home_dir() -> Path:
     return app_data_dir() / "codex"
+
+
+def whisper_models_dir() -> Path:
+    return app_data_dir() / "whisper-models"
