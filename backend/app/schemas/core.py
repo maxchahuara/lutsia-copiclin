@@ -31,6 +31,8 @@ class SettingsRead(BaseModel):
     telemetry_enabled: bool = False
     data_retention_policy: str = "keep_until_deleted"
     ai_account_mode: str = "codex_account_login"
+    setup_completed: bool = False
+    setup_mode: str = "required"
 
 
 class SettingsUpdate(BaseModel):
@@ -41,3 +43,5 @@ class SettingsUpdate(BaseModel):
     encryption_enabled: bool | None = None
     telemetry_enabled: bool | None = None
     data_retention_policy: str | None = None
+    setup_completed: bool | None = None
+    setup_mode: str | None = None

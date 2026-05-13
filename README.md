@@ -12,6 +12,18 @@ Estado actual: prototipo técnico pre-release. No es HCE/EHR, no diagnostica y n
 - No se usan cookies, automatización de ChatGPT Web, endpoints privados ni credenciales del desarrollador.
 - Whisper/faster-whisper local es permitido para transcripción.
 
+
+## Primer arranque
+
+Al abrir CopiClin por primera vez, la app muestra una configuración inicial obligatoria:
+
+1. Verificar conexión de cuenta ChatGPT/Codex por usuario.
+2. Verificar instalación de Whisper/faster-whisper para transcripción local.
+3. Verificar runtime de audio/FFmpeg.
+4. Confirmar que CopiClin solo genera borradores revisables por el médico.
+
+Si faltan pasos, la app permite continuar únicamente para demo/pruebas locales, pero no marca el sistema como listo para uso real.
+
 ## Desarrollo local
 
 Requisitos:

@@ -11,6 +11,7 @@ from app.services.audio_storage import save_upload
 from app.services.codex_account import CodexAccountProvider
 from app.services.memory_store import store
 from app.services.runtime_checks import check_capabilities, codex_login_status
+from app.services.setup_status import first_run_setup_status
 from app.services.note_generation import MockLLMProvider
 from app.services.transcription import LocalFasterWhisperProvider, MockTranscriptionProvider
 
@@ -78,6 +79,25 @@ def get_consultation(consultation_id: str) -> ConsultationRead:
 @app.get("/runtime/capabilities")
 def runtime_capabilities():
     return {"capabilities": [cap.to_dict() for cap in check_capabilities()]}
+
+
+@app.get("/setup/status")
+def setup_status():
+    return first_run_setup_status(store.settings)
+
+
+@app.post("/setup/complete", response_model=SettingsRead)
+def complete_setup():
+    store.settings = store.settings.model_copy(update={"setup_completed": True})
+    store.save()
+    return store.settings
+
+
+@app.post("/setup/reset", response_model=SettingsRead)
+def reset_setup():
+    store.settings = store.settings.model_copy(update={"setup_completed": False})
+    store.save()
+    return store.settings
 
 
 @app.get("/auth/codex/status")
