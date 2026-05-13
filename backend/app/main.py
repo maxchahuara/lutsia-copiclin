@@ -1,8 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 
 from app.schemas.clinical_note import ClinicalNoteResult
 from app.schemas.core import ConsultationCreate, ConsultationRead, SettingsRead, SettingsUpdate
+from app.services.audio_storage import save_upload
 from app.services.memory_store import store
+from app.services.runtime_checks import check_capabilities
 from app.services.note_generation import MockLLMProvider
 from app.services.transcription import MockTranscriptionProvider
 
@@ -43,6 +45,11 @@ def get_consultation(consultation_id: str) -> ConsultationRead:
         raise HTTPException(status_code=404, detail="Consultation not found") from exc
 
 
+@app.get("/runtime/capabilities")
+def runtime_capabilities():
+    return {"capabilities": [cap.to_dict() for cap in check_capabilities()]}
+
+
 @app.get("/providers")
 def providers() -> dict[str, list[dict[str, str | bool]]]:
     return {
@@ -59,11 +66,21 @@ def providers() -> dict[str, list[dict[str, str | bool]]]:
     }
 
 
+@app.post("/consultations/{consultation_id}/audio/upload")
+async def upload_audio(consultation_id: str, file: UploadFile = File(...)):
+    if consultation_id not in store.consultations:
+        raise HTTPException(status_code=404, detail="Consultation not found")
+    audio = await save_upload(consultation_id, file)
+    store.audio_files.setdefault(consultation_id, []).append(audio)
+    return audio
+
+
 @app.post("/consultations/{consultation_id}/transcribe")
 def transcribe(consultation_id: str):
     if consultation_id not in store.consultations:
         raise HTTPException(status_code=404, detail="Consultation not found")
-    result = MockTranscriptionProvider().transcribe(consultation_id=consultation_id)
+    latest_audio = (store.audio_files.get(consultation_id) or [{}])[-1].get("path")
+    result = MockTranscriptionProvider().transcribe(consultation_id=consultation_id, audio_path=latest_audio)
     store.transcripts[consultation_id] = result
     return result
 
