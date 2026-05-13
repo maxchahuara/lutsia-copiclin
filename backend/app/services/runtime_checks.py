@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import importlib.util
 import shutil
-import subprocess
 from dataclasses import dataclass, asdict
+
+from app.services.codex_account import CodexAccountProvider
 
 
 @dataclass
@@ -19,15 +20,8 @@ class Capability:
 
 
 def codex_login_status() -> tuple[bool, str]:
-    codex = shutil.which("codex")
-    if not codex:
-        return False, "codex CLI not found"
-    try:
-        proc = subprocess.run([codex, "login", "status"], text=True, capture_output=True, timeout=8)
-    except Exception as exc:  # pragma: no cover - environment dependent
-        return False, f"codex login status failed: {exc}"
-    output = ((proc.stdout or "") + (proc.stderr or "")).strip()
-    return proc.returncode == 0 and "not logged in" not in output.lower(), output or "no status output"
+    status = CodexAccountProvider().status()
+    return status.logged_in, f"{status.detail} (CODEX_HOME={status.codex_home})"
 
 
 def module_available(name: str) -> bool:

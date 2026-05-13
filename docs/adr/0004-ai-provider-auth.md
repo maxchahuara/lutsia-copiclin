@@ -1,6 +1,6 @@
 # ADR 0004: AI provider auth
 
-Decision: use OpenAI Codex account login as the intended LLM/cerebro path, using only official documented local Codex/OpenAI tooling.
+Decision: use OpenAI Codex account login as the intended LLM/cerebro path, using only official documented, app-scoped Codex tooling.
 
 Rejected for now:
 

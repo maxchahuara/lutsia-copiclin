@@ -13,7 +13,7 @@ The app must not automate ChatGPT web, extract cookies, use private endpoints, s
 
 ## Current provider policy
 
-1. `CodexAccountProvider` is the intended primary LLM provider. It may use only official documented local Codex/OpenAI tooling/authentication.
+1. `CodexAccountProvider` is the intended primary LLM provider. It may use only official documented, app-scoped Codex tooling/authentication.
 2. `MockProvider` remains available for tests/dev only.
 3. Local Whisper/faster-whisper remains allowed for transcription, not LLM reasoning.
 4. Ollama/local LLMs are disabled for now.
@@ -25,7 +25,7 @@ The app must not automate ChatGPT web, extract cookies, use private endpoints, s
 - Must not read or copy raw OAuth tokens.
 - Must not expose secrets in logs.
 - Must not run arbitrary untrusted commands.
-- Must show clear UX: “Uses your locally authenticated Codex/OpenAI account if available.”
+- Must show clear UX: “Uses your app-scoped authenticated Codex account if available.”
 - Must fail closed if Codex is not logged in.
 
 ## Current verification note

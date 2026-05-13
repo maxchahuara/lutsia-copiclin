@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from app.schemas.clinical_note import ClinicalNoteResult
 from app.schemas.core import ConsultationCreate, ConsultationRead, SettingsRead, SettingsUpdate
 from app.services.audio_storage import save_upload
+from app.services.codex_account import CodexAccountProvider
 from app.services.memory_store import store
 from app.services.runtime_checks import check_capabilities, codex_login_status
 from app.services.note_generation import MockLLMProvider
@@ -48,6 +49,16 @@ def get_consultation(consultation_id: str) -> ConsultationRead:
 @app.get("/runtime/capabilities")
 def runtime_capabilities():
     return {"capabilities": [cap.to_dict() for cap in check_capabilities()]}
+
+
+@app.get("/auth/codex/status")
+def codex_auth_status():
+    return CodexAccountProvider().status().to_dict()
+
+
+@app.get("/auth/codex/login-instructions")
+def codex_login_instructions():
+    return CodexAccountProvider().login_instructions()
 
 
 @app.get("/providers")
