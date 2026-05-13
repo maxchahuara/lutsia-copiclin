@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import shutil
+import subprocess
 from dataclasses import dataclass, asdict
 
 
@@ -15,6 +16,18 @@ class Capability:
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
+
+
+def codex_login_status() -> tuple[bool, str]:
+    codex = shutil.which("codex")
+    if not codex:
+        return False, "codex CLI not found"
+    try:
+        proc = subprocess.run([codex, "login", "status"], text=True, capture_output=True, timeout=8)
+    except Exception as exc:  # pragma: no cover - environment dependent
+        return False, f"codex login status failed: {exc}"
+    output = ((proc.stdout or "") + (proc.stderr or "")).strip()
+    return proc.returncode == 0 and "not logged in" not in output.lower(), output or "no status output"
 
 
 def module_available(name: str) -> bool:
@@ -58,19 +71,20 @@ def check_capabilities() -> list[Capability]:
         detail="Native audio capture package",
         install_hint="pip install -e .[local-ai]",
     ))
-    caps.append(Capability(
-        id="ollama",
-        ok=shutil.which("ollama") is not None,
-        required_for="local LLM provider",
-        detail=shutil.which("ollama") or "ollama CLI not found",
-        install_hint="Install Ollama from official packages if using local LLMs.",
-    ))
+    codex_logged_in, codex_detail = codex_login_status()
     caps.append(Capability(
         id="codex-cli",
         ok=shutil.which("codex") is not None,
-        required_for="experimental account-backed provider",
+        required_for="OpenAI Codex account-backed LLM provider",
         detail=shutil.which("codex") or "codex CLI not found",
         install_hint="Install official OpenAI Codex CLI if this provider is enabled.",
+    ))
+    caps.append(Capability(
+        id="codex-login",
+        ok=codex_logged_in,
+        required_for="OpenAI Codex account-backed LLM provider",
+        detail=codex_detail,
+        install_hint="Run official Codex login with ChatGPT/Codex account; do not use API key for this product path.",
     ))
     return caps
 

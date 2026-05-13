@@ -5,24 +5,19 @@ Date: 2026-05-13
 
 ## Product direction
 
-LUTSIA CopiClin should behave like an agile clinical copilot, not a restrictive/expensive API-first tool.
-
-Owner direction: prefer a ChatGPT/Codex-account style provider similar in spirit to OpenClaw, and do not make OpenAI API keys the required/default path.
+LUTSIA CopiClin should use an OpenAI Codex/ChatGPT account login style similar to OpenClaw, not an OpenAI API-key-first flow and not a local LLM for now.
 
 ## Non-negotiable boundary
 
 The app must not automate ChatGPT web, extract cookies, use private endpoints, simulate browser sessions, or depend on hacks.
 
-## Recommended interpretation
+## Current provider policy
 
-The acceptable path is an **official local account-backed provider** only when it uses documented OpenAI/Codex tooling/authentication, similar to how OpenClaw/Codex CLI can authenticate with ChatGPT/Codex accounts.
-
-For MVP development, implement provider abstraction with:
-
-1. `MockProvider` for deterministic dev/tests.
-2. `LocalProvider` adapters for local Ollama / faster-whisper / whisper.cpp.
-3. `CodexAccountProvider` as an experimental local bridge that invokes an officially authenticated Codex CLI or documented local OpenAI tooling, if present on the user's machine.
-4. `OpenAIAPIProvider` not as the default path; keep it optional/disabled behind explicit configuration only if later accepted.
+1. `CodexAccountProvider` is the intended primary LLM provider. It may use only official documented local Codex/OpenAI tooling/authentication.
+2. `MockProvider` remains available for tests/dev only.
+3. Local Whisper/faster-whisper remains allowed for transcription, not LLM reasoning.
+4. Ollama/local LLMs are disabled for now.
+5. OpenAI API-key-first flow is not the product default and should not be required for normal use.
 
 ## CodexAccountProvider constraints
 
@@ -30,10 +25,9 @@ For MVP development, implement provider abstraction with:
 - Must not read or copy raw OAuth tokens.
 - Must not expose secrets in logs.
 - Must not run arbitrary untrusted commands.
-- Must present clear UX: “Uses your locally authenticated Codex/OpenAI account if available.”
-- Must provide fallback to local/offline providers.
-- Must be documented as experimental until confirmed stable for packaged end-user use.
+- Must show clear UX: “Uses your locally authenticated Codex/OpenAI account if available.”
+- Must fail closed if Codex is not logged in.
 
-## Medical/privacy note
+## Current verification note
 
-Using an account-backed cloud model still sends consultation text/audio-derived content to a third-party AI service. The UI must disclose this clearly. Local/offline mode remains the privacy-first option.
+The code can detect Codex CLI presence and `codex login status`. If the local Codex CLI is not logged in, the provider is unavailable until official login is completed.

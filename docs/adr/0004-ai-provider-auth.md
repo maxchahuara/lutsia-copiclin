@@ -1,3 +1,12 @@
 # ADR 0004: AI provider auth
 
-Decision: account-first direction via official documented local Codex/OpenAI tooling if available; no ChatGPT web automation. OpenAI API key is optional/disabled, not the default product path. Local providers remain the privacy-first route.
+Decision: use OpenAI Codex account login as the intended LLM/cerebro path, using only official documented local Codex/OpenAI tooling.
+
+Rejected for now:
+
+- Local LLMs such as Ollama.
+- OpenAI API-key-first product flow.
+- ChatGPT web automation.
+- Cookies/private endpoints/browser session hacks.
+
+Mock provider remains for deterministic tests only.

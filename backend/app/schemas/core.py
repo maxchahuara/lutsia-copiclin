@@ -25,12 +25,12 @@ class ConsultationRead(ConsultationCreate):
 class SettingsRead(BaseModel):
     language: str = "es"
     transcription_provider: str = "mock"
-    llm_provider: str = "mock"
-    model_name: str = "mock-clinical-safe"
+    llm_provider: str = "codex-account"
+    model_name: str = "codex-account-default"
     encryption_enabled: bool = True
     telemetry_enabled: bool = False
     data_retention_policy: str = "keep_until_deleted"
-    ai_account_mode: str = "local_or_codex_account_experimental"
+    ai_account_mode: str = "codex_account_login"
 
 
 class SettingsUpdate(BaseModel):

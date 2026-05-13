@@ -13,7 +13,7 @@ Core product priorities:
 2. One-click install from GitHub Releases for Windows, macOS, and Linux.
 3. Simple workflow for non-technical physicians.
 4. Official/allowed AI integrations only.
-5. Provider abstraction for OpenAI API and local models.
+5. Provider abstraction centered on OpenAI Codex account login for LLM/cerebro, plus local Whisper for transcription.
 6. Traceability from generated note sections back to transcript segments.
 7. Medical safety: no invented facts, explicit uncertainty, physician validation required.
 
@@ -27,11 +27,12 @@ Validated from official OpenAI developer docs on 2026-05-13:
 
 Decision for MVP:
 
-- OpenAI provider: official OpenAI API key only.
-- Store API key in OS keychain via `keyring`.
+- LLM/cerebro provider: OpenAI Codex account login style through official documented local tooling only.
 - Do not automate ChatGPT web.
 - Do not use cookies/private endpoints/browser sessions.
-- `OptionalCodexOrChatGPTProvider` remains disabled and documented as unsupported unless OpenAI documents a permitted product integration for this use case.
+- Do not make OpenAI API keys the default or required path.
+- Local LLMs such as Ollama are disabled for now.
+- Local Whisper remains allowed for transcription.
 
 ## 3. Recommended architecture
 
@@ -48,7 +49,7 @@ Backend:
 - FastAPI + Pydantic.
 - SQLModel or SQLAlchemy + SQLite.
 - Local job queue using SQLite + threads/asyncio.
-- keyring for API keys/master secrets.
+- keyring for any future secrets/master keys; Codex provider must not read raw account tokens.
 - cryptography for app-level file encryption where practical.
 - ffmpeg bundled or managed in packaged build.
 
@@ -94,18 +95,18 @@ Medical/legal:
 
 Security/privacy:
 
-- API keys must never be plaintext.
+- Account credentials/tokens must never be read, copied, logged, or stored by the app.
 - Local files require encryption strategy and clear retention/deletion.
 - Logs and crash reports must avoid sensitive content.
-- OpenAI mode necessarily sends selected audio/text to OpenAI API; UI must disclose this clearly.
+- Codex/account-backed mode may send selected transcript/note context to OpenAI services through official tooling; UI must disclose this clearly.
 
 ## 5. Decisions requiring approval
 
 1. License: Apache-2.0 recommended for adoption; AGPL-3.0 if forcing open derivatives is more important.
 2. Default GitHub repo visibility for early work: private recommended.
-3. MVP transcription default: OpenAI API first for accuracy and speed, plus mock/local architecture; or local-only first for privacy purity.
+3. MVP LLM default: Codex account login provider, with mock provider for dev/test only. Transcription can use local Whisper.
 4. Packaging priority order: Windows first, then macOS, then Linux; or all three from day one.
-5. Encryption scope for MVP: encrypt API keys only + app-level encrypted files, or postpone full DB/file encryption behind settings.
+5. Encryption scope for MVP: protect local clinical artifacts and never manage raw Codex/OpenAI account tokens directly.
 6. Whether to include local faster-whisper packaged in MVP installer or require user to enable/install local model separately in v0.
 
 ## 6. Phased plan
@@ -201,7 +202,7 @@ Week 1:
 Week 2:
 
 - Audio recording/upload proof of concept.
-- OpenAI API key storage through keyring.
+- Codex account-login availability check through official CLI/status; no raw token handling.
 - OpenAI transcription provider.
 - OpenAI structured note provider.
 - Editable generated note with copy buttons.

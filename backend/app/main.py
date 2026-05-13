@@ -4,7 +4,7 @@ from app.schemas.clinical_note import ClinicalNoteResult
 from app.schemas.core import ConsultationCreate, ConsultationRead, SettingsRead, SettingsUpdate
 from app.services.audio_storage import save_upload
 from app.services.memory_store import store
-from app.services.runtime_checks import check_capabilities
+from app.services.runtime_checks import check_capabilities, codex_login_status
 from app.services.note_generation import MockLLMProvider
 from app.services.transcription import MockTranscriptionProvider
 
@@ -59,9 +59,8 @@ def providers() -> dict[str, list[dict[str, str | bool]]]:
             {"id": "whisper-cpp", "name": "Local whisper.cpp", "local": True, "enabled": False},
         ],
         "llm": [
-            {"id": "mock", "name": "Mock clinical note generator", "local": True, "enabled": True},
-            {"id": "ollama", "name": "Local Ollama", "local": True, "enabled": False},
-            {"id": "codex-account", "name": "Experimental Codex account bridge", "local": False, "enabled": False},
+            {"id": "codex-account", "name": "OpenAI Codex account login", "local": False, "enabled": codex_login_status()[0]},
+            {"id": "mock", "name": "Mock clinical note generator (dev/test only)", "local": True, "enabled": False, "dev_only": True},
         ],
     }
 
