@@ -192,20 +192,6 @@ class CodexAccountProvider:
             return CodexAccountStatus(
                 True, False, f"codex login status failed: {exc}", str(APP_CODEX_HOME)
             )
-        if not logged_in:
-            try:
-                global_logged_in, global_output = _status_from_command(codex, None)
-            except Exception:
-                global_logged_in = False
-                global_output = ""
-            if global_logged_in:
-                return CodexAccountStatus(
-                    True,
-                    True,
-                    f"Cuenta ChatGPT/Codex detectada en esta PC ({global_output})",
-                    str(APP_CODEX_HOME),
-                    "existing per-user Codex session",
-                )
         return CodexAccountStatus(
             True, logged_in, output or "no status output", str(APP_CODEX_HOME)
         )
@@ -342,6 +328,8 @@ class CodexAccountProvider:
 
             command = [
                 codex,
+                "--disable",
+                "plugins",
                 "--ask-for-approval",
                 "never",
                 "exec",
@@ -357,15 +345,15 @@ class CodexAccountProvider:
                 "-",
             ]
             if model_name and model_name != "codex-account-default":
-                command[4:4] = ["--model", model_name]
+                exec_index = command.index("exec")
+                command[exec_index + 1 : exec_index + 1] = ["--model", model_name]
 
-            run_env = None if status.auth_scope == "existing per-user Codex session" else codex_env()
             proc = subprocess.run(
                 command,
                 input=prompt.encode("utf-8"),
                 capture_output=True,
                 timeout=timeout_seconds,
-                env=run_env,
+                env=codex_env(),
                 cwd=tmp,
             )
             stdout = (proc.stdout or b"").decode("utf-8", errors="replace")
